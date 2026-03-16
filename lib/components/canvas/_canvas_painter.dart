@@ -1,3 +1,6 @@
+/// 🤖 Generated wholely or partially with Claude Sonnet 4.5
+library;
+
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -119,15 +122,16 @@ class CanvasPainter extends CustomPainter {
       paint.shader = null;
       paint.maskFilter = null;
       if (stroke.toolId == .pencil) {
-        if (shouldUsePencilShader(stroke.options.size)) {
+        final pencilShader = page.pencilShader;
+        if (shouldUsePencilShader(stroke.options.size) && pencilShader != null) {
           paint.color = Colors.white;
-          paint.shader = page.pencilShader
+          paint.shader = pencilShader
             ..setFloat(0, color.r)
             ..setFloat(1, color.g)
             ..setFloat(2, color.b);
           paint.maskFilter = _getPencilMaskFilter(stroke.options.size);
         } else {
-          // Fast imitation of pencil when zoomed out
+          // Fast imitation of pencil when zoomed out or shader is unavailable
           final background = invert ? Colors.black : Colors.white;
           paint.color = Color.lerp(background, color, 0.6)!;
         }
@@ -166,12 +170,20 @@ class CanvasPainter extends CustomPainter {
     paint.shader = null;
     paint.maskFilter = null;
     if (currentStroke!.toolId == .pencil) {
-      paint.color = Colors.white;
-      paint.shader = page.pencilShader
-        ..setFloat(0, color.r)
-        ..setFloat(1, color.g)
-        ..setFloat(2, color.b);
-      paint.maskFilter = _getPencilMaskFilter(currentStroke!.options.size);
+      final pencilShader = page.pencilShader;
+      if (pencilShader != null) {
+        paint.color = Colors.white;
+        paint.shader = pencilShader
+          ..setFloat(0, color.r)
+          ..setFloat(1, color.g)
+          ..setFloat(2, color.b);
+        paint.maskFilter =
+            _getPencilMaskFilter(currentStroke!.options.size);
+      } else {
+        // Fallback when pencil shader is unavailable (e.g. unsupported GPU)
+        final background = invert ? Colors.black : Colors.white;
+        paint.color = Color.lerp(background, color, 0.6)!;
+      }
     }
 
     // Current stroke always uses high quality

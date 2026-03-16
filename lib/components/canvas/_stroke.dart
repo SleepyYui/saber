@@ -1,3 +1,6 @@
+/// 🤖 Generated wholely or partially with Claude Sonnet 4.5
+library;
+
 import 'dart:math';
 
 import 'package:collection/collection.dart';
@@ -369,8 +372,18 @@ class Stroke {
     points.add(lastPoint);
     points.add(lastPoint);
     options.isComplete = true;
-    options.start.taperEnabled = false;
-    options.end.taperEnabled = false;
+
+    // Replace start/end with new objects instead of mutating the existing ones.
+    // Mutating in-place would corrupt the pen's shared StrokeEndOptions
+    // (since options.start/end are shallow-copied from the pen's options).
+    options.start = StrokeEndOptions.start(
+      cap: options.start.cap,
+      taperEnabled: false,
+    );
+    options.end = StrokeEndOptions.end(
+      cap: options.end.cap,
+      taperEnabled: false,
+    );
   }
 
   /// Snaps a line to either horizontal or vertical
