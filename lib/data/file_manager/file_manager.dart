@@ -929,6 +929,46 @@ class FileManager {
   }
 
   static const maxRecentlyAccessedFiles = 30;
+
+  /// Creates a zip archive of all files in the Saber data directory
+  /// and exports it via the platform's share/save mechanism.
+  ///
+  /// Returns the number of files included in the backup.
+  static Future<int> exportAllData(BuildContext context) async {
+    final rootDir = Directory(documentsDirectory);
+    if (!rootDir.existsSync()) return 0;
+
+    final archive = Archive();
+    var fileCount = 0;
+
+    await for (final entity in rootDir.list(recursive: true)) {
+      if (entity is! File) continue;
+
+      final relativePath = p.relative(entity.path, from: documentsDirectory);
+      // Use forward slashes in zip entries for cross-platform compatibility.
+      final archivePath = relativePath.replaceAll('\\', '/');
+      final bytes = await entity.readAsBytes();
+
+      archive.addFile(ArchiveFile(archivePath, bytes.length, bytes));
+      fileCount++;
+    }
+
+    if (fileCount == 0) return 0;
+
+    final now = DateTime.now();
+    final dateStr = DateFormat('yyyy-MM-dd').format(now);
+    final fileName = 'Saber_backup_$dateStr.zip';
+    final zipBytes = ZipEncoder().encode(archive);
+
+    if (!context.mounted) return fileCount;
+    await exportFile(
+      fileName,
+      Uint8List.fromList(zipBytes),
+      context: context,
+    );
+
+    return fileCount;
+  }
 }
 
 class DirectoryChildren {

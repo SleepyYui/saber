@@ -147,6 +147,9 @@ class TranslationsSettingsEn {
 	/// en: 'Open Saber folder'
 	String get openDataDir => 'Open Saber folder';
 
+	/// en: 'Export all data'
+	String get exportAllData => 'Export all data';
+
 	late final TranslationsSettingsCustomDataDirEn customDataDir = TranslationsSettingsCustomDataDirEn.internal(_root);
 
 	/// en: 'Never'

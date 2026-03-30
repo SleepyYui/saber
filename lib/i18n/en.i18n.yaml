@@ -156,6 +156,7 @@ settings:
     button: Reset
   resyncEverything: Resync everything
   openDataDir: Open Saber folder
+  exportAllData: Export all data
   customDataDir:
     cancel: Cancel
     select: Select

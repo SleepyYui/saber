@@ -581,6 +581,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       }
                     },
                   ),
+                _ExportAllDataButton(),
                 if (requiresManualUpdates ||
                     stows.shouldCheckForUpdates.value !=
                         stows.shouldCheckForUpdates.defaultValue) ...[
@@ -630,5 +631,32 @@ class _SettingsPageState extends State<SettingsPage> {
     stows.locale.removeListener(onChanged);
     UpdateManager.status.removeListener(onChanged);
     super.dispose();
+  }
+}
+
+class _ExportAllDataButton extends StatefulWidget {
+  @override
+  State<_ExportAllDataButton> createState() => _ExportAllDataButtonState();
+}
+
+class _ExportAllDataButtonState extends State<_ExportAllDataButton> {
+  var _exporting = false;
+
+  Future<void> _exportAllData() async {
+    setState(() => _exporting = true);
+    try {
+      await FileManager.exportAllData(context);
+    } finally {
+      if (mounted) setState(() => _exporting = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsButton(
+      title: t.settings.exportAllData,
+      icon: _exporting ? Icons.hourglass_top : Icons.folder_zip,
+      onPressed: _exporting ? null : _exportAllData,
+    );
   }
 }
