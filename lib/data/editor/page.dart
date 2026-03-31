@@ -1,3 +1,6 @@
+/// 🤖 Generated wholely or partially with Claude Sonnet 4.5
+library;
+
 import 'dart:async';
 import 'dart:math';
 import 'dart:typed_data';
@@ -41,7 +44,16 @@ class EditorPage extends ChangeNotifier implements HasSize {
     _renderBox = null;
   }
 
-  FragmentShader get pencilShader => _pencilShader ??= PencilShader.create();
+  /// The pencil shader, or null if unavailable on this device.
+  FragmentShader? get pencilShader {
+    if (!_pencilShaderCreated) {
+      _pencilShaderCreated = true;
+      _pencilShader = PencilShader.create();
+    }
+    return _pencilShader;
+  }
+
+  bool _pencilShaderCreated = false;
   FragmentShader? _pencilShader;
 
   final List<Stroke> strokes;
